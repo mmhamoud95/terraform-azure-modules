@@ -1,0 +1,191 @@
+############################################################################
+##
+##    naming variables
+##
+############################################################################
+
+
+variable "vm_depends_on" {
+  type = any
+  default = []
+}
+# Generic naming variables
+variable "name_prefix" {
+  description = "Optional prefix for the generated name."
+  type        = string
+  default     = ""
+}
+
+variable "name_suffix" {
+  description = "Optional suffix for the generated name."
+  type        = string
+  default     = ""
+}
+
+variable "use_caf_naming" {
+  description = "Use the Azure CAF naming provider to generate default resource name. `custom_server_name` override this if set. Legacy default name is used if this is set to `false`."
+  type        = bool
+  default     = true
+}
+
+# Custom naming override
+variable "custom_server_name" {
+  type        = string
+  description = "Custom Server Name identifier."
+  default     = ""
+}
+
+variable "use_caf_naming_for_databases" {
+  description = "Use the Azure CAF naming provider to generate databases name."
+  type        = bool
+  default     = false
+}
+
+variable "tags" {
+  description = "Map of  tags."
+  type        = map(string)
+  default     = {}
+}
+
+###############################################################################
+##
+##     postgresql server 
+##
+###############################################################################
+
+variable "client_name" {
+  description = "Name of client."
+  type        = string
+}
+
+variable "environment" {
+  description = "Name of application's environnement."
+  type        = string
+}
+
+variable "stack" {
+  description = "Name of application stack."
+  type        = string
+}
+
+variable "resource_group_name" {
+  description = "Name of the application ressource group, herited from infra module."
+  type        = string
+}
+
+variable "location" {
+  description = "Azure location."
+  type        = string
+}
+
+variable "location_short" {
+  description = "Short string for Azure location."
+  type        = string
+}
+
+variable "tier" {
+  description = "Tier for PostgreSQL Flexible server sku : https://docs.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-compute-storage. Possible values are: GeneralPurpose, Burstable, MemoryOptimized."
+  type        = string
+  default     = "GeneralPurpose"
+}
+
+variable "size" {
+  description = "Size for PostgreSQL Flexible server sku : https://docs.microsoft.com/en-us/azure/postgresql/flexible-server/concepts-compute-storage."
+  type        = string
+  default     = "D2ds_v4"
+}
+
+variable "storage_mb" {
+  description = "Storage allowed for PostgresSQL Flexible server. Possible values : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server#storage_mb."
+  type        = number
+  default     = 32768
+}
+
+variable "postgresql_version" {
+  description = "Version of PostgreSQL Flexible Server. Possible values are : https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server#version."
+  type        = number
+  default     = 13
+}
+
+variable "zone" {
+  description = "Specify availability-zone for PostgreSQL Flexible main Server."
+  type        = number
+  default     = 1
+}
+
+variable "standby_zone" {
+  description = "Specify availability-zone to enable high_availability and create standby PostgreSQL Flexible Server. (Null to disable high-availability)"
+  type        = number
+  default     = 2
+}
+
+variable "administrator_login" {
+  description = "PostgreSQL administrator login."
+  type        = string
+}
+
+variable "administrator_password" {
+  description = "PostgreSQL administrator password. Strong Password : https://docs.microsoft.com/en-us/sql/relational-databases/security/strong-passwords?view=sql-server-2017."
+  type        = string
+}
+
+variable "backup_retention_days" {
+  description = "Backup retention days for the PostgreSQL Flexible Server (Between 7 and 35 days)."
+  type        = number
+  default     = 7
+}
+
+variable "geo_redundant_backup_enabled" {
+  description = "Enable Geo Redundant Backup for the PostgreSQL Flexible Server."
+  type        = bool
+  default     = false
+}
+
+variable "maintenance_window" {
+  description = "Map of maintenance window configuration."
+  type        = map(number)
+  default     = null
+}
+
+variable "private_dns_zone_id" {
+  description = "ID of the private DNS zone to create the PostgreSQL Flexible Server."
+  type        = string
+  default     = null
+}
+
+variable "delegated_subnet_id" {
+  description = "Id of the subnet to create the PostgreSQL Flexible Server. (Should not have any resource deployed in)"
+  type        = string
+  default     = null
+}
+
+variable "databases" {
+  description = <<EOF
+  Map of databases configurations with database name as key and following available configuration option:
+   *  (optional) charset: Valid PostgreSQL charset : https://www.postgresql.org/docs/current/multibyte.html#CHARSET-TABLE
+   *  (optional) collation: Valid PostgreSQL collation : http://www.postgresql.cn/docs/13/collation.html - be careful about https://docs.microsoft.com/en-us/windows/win32/intl/locale-names?redirectedfrom=MSDN
+  EOF
+  type = map(object({
+    charset   = optional(string, "UTF8")
+    collation = optional(string, "en_US.UTF8")
+  }))
+  default = {}
+}
+
+variable "postgresql_configurations" {
+  description = "PostgreSQL configurations to enable."
+  type        = map(string)
+  default     = {}
+}
+
+
+
+variable "diagnostics" {
+  description = "Diagnostic settings for postgresql flexible server. See README.md for details on configuration."
+  type = object({
+    log_analytics_workspace_id = string
+    logs                       = optional(list(string), [])
+    metrics                    = optional(list(string), [])
+  })
+  default = null
+}
