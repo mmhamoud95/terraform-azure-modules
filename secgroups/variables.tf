@@ -12,6 +12,12 @@ variable "location" {
   type        = string
   description = "The location/region where the network security group is created. "
 }
+variable "secgroups_association" {
+  type        = map(string)
+  default     = {}
+  description = "association secgroups, key should be static string, value should be subnet's id"
+  nullable    = false
+}
 
 variable "inbound_rules" {
   type        = list(map(string))

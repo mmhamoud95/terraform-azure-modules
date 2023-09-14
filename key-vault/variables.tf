@@ -18,6 +18,7 @@ variable "tenant_id" {
   type        = string
   description = "The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault."
 }
+
 variable "soft_delete_retention_days" {
   type        = number
   default     = 90
@@ -48,11 +49,29 @@ variable "enable_rbac_authorization" {
   default     = false
   description = "Boolean flag to specify whether Azure Key Vault uses Role Based Access Control (RBAC) for authorization of data actions."
 }
+
 variable "access_policies" {
-  type        = list(map(string))
-  default     = []
-  description = "List of objects that represent the configuration of each access policies."
-  # access_policies = [{ object_id = "", application_id = "", key_permissions = "", secret_permissions = "", certificate_permissions = "", storage_permissions = "" }]
+  type = map(object({
+    tenant_id                                          = string
+    object_id                                           = string
+    key_permissions                             = optional(list(string))
+    secret_permissions                                    = optional(list(string))
+    application_id     = optional(string)
+    certificate_permissions = optional(list(string))
+    storage_permissions    = optional(list(string))
+  }))
+  default     = {}
+  description = "map of objects that represent the configuration of each subnet."
+}
+variable "network_acls" {
+  description = "Object with attributes: `bypass`, `default_action`, `ip_rules`, `virtual_network_subnet_ids`. Set to `null` to disable. See https://www.terraform.io/docs/providers/azurerm/r/key_vault.html#bypass for more information."
+  type = object({
+    bypass                     = optional(string, "None"),
+    default_action             = optional(string, "Deny"),
+    ip_rules                   = optional(list(string)),
+    virtual_network_subnet_ids = optional(list(string)),
+  })
+  default = {}
 }
 variable "keys" {
   type        = list(map(string))

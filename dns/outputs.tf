@@ -1,3 +1,8 @@
+output "zone_name" {
+  description   = "The DNS Zone ID."
+  value         = var.create_dns_zone ? (var.public_dns_zone ? azurerm_dns_zone.zone_public.0.name : azurerm_private_dns_zone.zone_private.0.name) : null
+}
+
 output "zone_id" {
   description   = "The DNS Zone ID."
   value         = var.create_dns_zone ? (var.public_dns_zone ? azurerm_dns_zone.zone_public.0.id : azurerm_private_dns_zone.zone_private.0.id) : null

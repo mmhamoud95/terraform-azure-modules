@@ -15,8 +15,9 @@ output "location" {
   description = "The location/region where the virtual network is created."
 }
 output "access_policies" {
-  value       = azurerm_key_vault.vault.access_policy
+  value       = {for policies in azurerm_key_vault_access_policy.policies: policies.tenant_id => policies}
   description = "Blocks containing configuration of each access policy."
+  # module.MODULE_NAME.subnets["SUBNET_NAME"].id
 }
 output "keys" {
   value       = azurerm_key_vault.vault.access_policy

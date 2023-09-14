@@ -36,3 +36,9 @@ resource "azurerm_network_security_rule" "outbound" {
   destination_port_range      = lookup(each.value, "destination_port_range", "*")
   description                 = lookup(each.value, "description", null)
 }
+
+resource "azurerm_subnet_network_security_group_association" "this" {
+  for_each = var.secgroups_association
+  subnet_id                 = each.value
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}

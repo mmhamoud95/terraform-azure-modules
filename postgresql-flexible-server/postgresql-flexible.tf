@@ -77,7 +77,7 @@ data "azurerm_monitor_diagnostic_categories" "server" {
 resource "azurerm_monitor_diagnostic_setting" "server" {
   count = var.diagnostics != null ? 1 : 0
 
-  name                       = "${var.name}-diagnostics"
+  name                       = "${local.postgresql_flexible_server_name}-diagnostics"
   target_resource_id         = azurerm_postgresql_flexible_server.postgresql_flexible_server.id
   log_analytics_workspace_id = var.diagnostics.log_analytics_workspace_id
 

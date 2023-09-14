@@ -4,7 +4,6 @@ resource "azurerm_key_vault" "vault" {
   location                        = var.location
   sku_name                        = lower(var.sku_name)
   tenant_id                       = var.tenant_id
-  soft_delete_enabled             = true
   soft_delete_retention_days      = var.soft_delete_retention_days
   purge_protection_enabled        = var.purge_protection_enabled
   enabled_for_deployment          = var.enabled_for_deployment
@@ -12,16 +11,14 @@ resource "azurerm_key_vault" "vault" {
   enabled_for_template_deployment = var.enabled_for_template_deployment
   enable_rbac_authorization       = var.enable_rbac_authorization
 
-  dynamic "access_policy" {
-    for_each = var.access_policies
+  dynamic "network_acls" {
+    for_each = var.network_acls == null ? [] : [var.network_acls]
+    iterator = acl
     content {
-      tenant_id               = var.tenant_id
-      object_id               = access_policy.value.object_id
-      application_id          = lookup(access_policy.value, "application_id", null)
-      key_permissions         = lookup(access_policy.value, "key_permissions", "") == "" ? null : split(",", access_policy.value.key_permissions)
-      secret_permissions      = lookup(access_policy.value, "secret_permissions", "") == "" ? null : split(",", access_policy.value.secret_permissions)
-      certificate_permissions = lookup(access_policy.value, "certificate_permissions", "") == "" ? null : split(",", access_policy.value.certificate_permissions)
-      storage_permissions     = lookup(access_policy.value, "storage_permissions", "") == "" ? null : split(",", access_policy.value.storage_permissions)
+      bypass                     = acl.value.bypass
+      default_action             = acl.value.default_action
+      ip_rules                   = acl.value.ip_rules
+      virtual_network_subnet_ids = acl.value.virtual_network_subnet_ids
     }
   }
 

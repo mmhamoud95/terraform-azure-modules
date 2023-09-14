@@ -205,7 +205,12 @@ variable "identity_type" {
     error_message = "`identity_type`'s possible values are `SystemAssigned` and `UserAssigned`"
   }
 }
-
+variable "network_contributor_role_assigned_subnet_ids" {
+  type        = map(string)
+  default     = {}
+  description = "Create role assignments for the AKS Service Principal to be a Network Contributor on the subnets used for the AKS Cluster, key should be static string, value should be subnet's id"
+  nullable    = false
+}
 variable "ingress_application_gateway_enabled" {
   type        = bool
   default     = false

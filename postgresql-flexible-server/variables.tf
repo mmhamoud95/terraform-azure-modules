@@ -116,7 +116,12 @@ variable "zone" {
 variable "standby_zone" {
   description = "Specify availability-zone to enable high_availability and create standby PostgreSQL Flexible Server. (Null to disable high-availability)"
   type        = number
-  default     = 2
+  default     = null
+}
+
+variable "allowed_cidrs" {
+  description = "Map of authorized cidrs."
+  type        = map(string)
 }
 
 variable "administrator_login" {
